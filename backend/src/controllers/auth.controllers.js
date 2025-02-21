@@ -47,10 +47,38 @@ export const signup = async (req, res) => {
     }
 };
 
-export const login=()=>{
-    res.send("Login");
+export const login=async (req,res)=>{
+    const {email,password}=req.body;
+    try {
+        const user=await User.findOne({email});
+        if(user){
+            const isPasswordcorrect=await bcrypt.compare(password,user.password);
+            if(!isPasswordcorrect){
+                return res.status('404').json({message:'Invalid credentials'});
+            }
+            generateToken(user._id,res);
+            res.status(201).json({
+                _id: user._id,
+                fullname: user.fullname,  
+                email: user.email,
+                profilePic: user.profilePic
+            });
+        }
+        else{
+            return res.status('401').json({message:'Invalid credentials.'});
+        }
+    } catch (error) {
+        console.log("Error in login credentials:"+error.message);
+        res.status(500).json({message:'Error in login credentials'});
+    }
 }
 
-export const logout=()=>{
-    res.send("Logout");
+export const logout=async (req,res)=>{
+    try {
+        res.cookie("jwt","",{maxAge:0});
+        res.status(201).json({message:"Logged out successfully"});
+    } catch (error) {
+        console.log(error.message);
+        res.status(401).json({message:'Couldnt logout.'});
+    }
 }
