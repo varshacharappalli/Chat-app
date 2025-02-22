@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/user.model";
+import User from "../models/user.model.js";
 
 export const protectedRoute=async(req,res,next)=>{
     try {
@@ -14,7 +14,7 @@ export const protectedRoute=async(req,res,next)=>{
             return res.status(400).json({message:'Invalid Token'});
         }
 
-        const user=await User.findbyId(decoded.userId).select('-password');
+        const user=await User.findById(decoded.userId).select('-password');
 
         if(!user){
             return res.status(400).json({message:'User Not Found'});
@@ -31,3 +31,5 @@ export const protectedRoute=async(req,res,next)=>{
     }
 
 }
+
+export default protectedRoute;
