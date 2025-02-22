@@ -1,6 +1,7 @@
 import User from '../models/user.model.js';
 import bcrypt from 'bcryptjs';
 import { generateToken } from '../lib/utils.js';
+import cloundinary from '../lib/cloudinary.js';
 
 export const signup = async (req, res) => {
     const { fullname, email, password } = req.body;
@@ -80,5 +81,31 @@ export const logout=async (req,res)=>{
     } catch (error) {
         console.log(error.message);
         res.status(401).json({message:'Couldnt logout.'});
+    }
+}
+
+export const updateProfile=async(req,res)=>{
+    try {
+        const{profilePic}=req.body;
+        if(!profilePic){
+            return res.status(400).json({message:'Error'});
+        }
+        const userId=req.user._id;
+        const profilePiclink=cloundinary.uploader.upload(profilePic);
+        const updatedUser=await User.findByIdAndUpdate(userId,{profilePic:profilePiclink.secure_url},{new:true});
+
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({message:'Error in updating profile'});
+    }
+}
+
+export const checkAuth=async(req,res)=>{
+    try {
+        const user=req.user;
+        res.status(201).json(user);
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({message:'Internal server error'});
     }
 }
