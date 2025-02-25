@@ -3,6 +3,7 @@ import { MessageSquare, User, Mail, Lock, Eye, EyeOff,Loader2 } from "lucide-rea
 import { userAuthStore } from '../store/userAuthStore';
 import {Link} from 'react-router-dom';
 import AuthImagePattern from '../components/AuthImagePattern'
+import toast from 'react-hot-toast';
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,10 +16,37 @@ const SignUpPage = () => {
   const { isSigningUp, signUp } = userAuthStore();
 
   const validateForm = () => {
+    if(!formData.fullname.trim()){
+      return toast.error("Full name is required");
+    }
+
+    if(!formData.email){
+      return toast.error("Email is required");
+    }
+
+    if (!/\S+@\S+\.\S+/.test(formData.email)){
+      return toast.error("Invalid email format");
+    }
+
+    if(!formData.password){
+      return toast.error("Password is required");
+    }
+    
+    if(formData.password.length<6){
+      return toast.error("The length of the password should be 6 or greater");
+    }
+
+    return true;
+  
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const success=validateForm();
+    if(success===true){
+      signup(success);
+    }
     
   };
 
