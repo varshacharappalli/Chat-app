@@ -32,6 +32,23 @@ export const userAuthStore=create((set)=>({
         catch(error){
             toast.error(error.message);
         }
+        finally{
+            set({isSigningUp:false});
+        }
+    },
+
+    login:async(data)=>{
+        set({isLogining:true});
+        try {
+            const response=axiosInstance.post('/auth/login',data);
+            set({authUser:data});
+            toast.success("Successfully Logined in.")
+        } catch (error) {
+            toast.error(error.message);
+        }
+        finally{
+            set({isLogining:false});
+        }
     },
 
     logout:async ()=>{
