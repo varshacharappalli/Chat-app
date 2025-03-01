@@ -30,7 +30,6 @@ const App = () => {
   console.log(authUser);
   return (
     <div>
-      
       <NavBar/>
       <Routes>
         <Route path='/' element={authUser?<HomePage/>:<Navigate to="/login"/>}/>
