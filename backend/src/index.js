@@ -9,7 +9,8 @@ dotenv.config({ path: "./src/.env" });
 import { mongo_db } from "./lib/db.js";
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));  // Adjust the limit as needed
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 console.log("MONGO_URI:", process.env.MONGO_URI); 
 

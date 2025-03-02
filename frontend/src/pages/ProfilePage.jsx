@@ -1,14 +1,26 @@
-import React from 'react'
+import { useState } from "react";
 import { userAuthStore } from '../store/userAuthStore';
 import { Camera, Mail, User } from "lucide-react";
 
-
 const ProfilePage = () => {
-  const {authUser,isUpdatingProfile,updateProfile}=userAuthStore();
+  const { authUser, isUpdatingProfile, updateProfile } = userAuthStore();
+  const [selectedImg, setSelectedImg] = useState(null);
 
-  const handleImageUpload=()=>{
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  }
+    const reader = new FileReader();
+
+    reader.readAsDataURL(file);
+
+    reader.onload = async () => {
+      const base64Image = reader.result;
+      setSelectedImg(base64Image);
+      await updateProfile({ profilePic: base64Image });
+    };
+  };
+
   return (
     <div className="h-screen pt-20">
       <div className="max-w-2xl mx-auto p-4 py-8">
@@ -59,7 +71,7 @@ const ProfilePage = () => {
                 <User className="w-4 h-4" />
                 Full Name
               </div>
-              <p className="px-4 py-2.5 bg-base-200 rounded-lg border">{authUser?.fullName}</p>
+              <p className="px-4 py-2.5 bg-base-200 rounded-lg border">{authUser?.fullname}</p>
             </div>
 
             <div className="space-y-1.5">
@@ -87,7 +99,6 @@ const ProfilePage = () => {
         </div>
       </div>
     </div>
-  )
-}
-
-export default ProfilePage
+  );
+};
+export default ProfilePage;

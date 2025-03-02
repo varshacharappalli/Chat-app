@@ -18,14 +18,12 @@ const App = () => {
 
   //Should check this logic.
 
-  /*if(isCheckingAuth||!authUser){
-    return(
+  if (isCheckingAuth && !authUser)
+    return (
       <div className="flex items-center justify-center h-screen">
-    <Loader className="size-10 animate-spin" />
-    </div>
-
-    )
-  }*/
+        <Loader className="size-10 animate-spin" />
+      </div>
+    );
 
   console.log(authUser);
   return (
