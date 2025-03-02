@@ -4,10 +4,14 @@ import NoChatSelected from '../components/NoChatSelected';
 import SideBar from '../components/SideBar';
 
 import {userChatStore} from '../store/userChatStore';
+import {userAuthStore} from '../store/userAuthStore';
+
 
 
 const HomePage = () => {
     const { selectedUser } = userChatStore();
+    const {onlineUsers}=userAuthStore();
+    
 
     return (
         <div className="h-screen bg-base-200">
