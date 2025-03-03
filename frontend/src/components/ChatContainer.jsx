@@ -7,13 +7,18 @@ import { userAuthStore } from '../store/userAuthStore';
 import { formatMessageTime } from '../lib/utils';
 
 const ChatContainer = () => {
-  const { messages, getMessages, isMessagesLoading, selectedUser } = userChatStore();
+  const { messages, getMessages, isMessagesLoading, selectedUser,subscribeToMessages,unsubscribeToMessages} = userChatStore();
   const { authUser } = userAuthStore();
   const messageEndRef = useRef(null); // Fix: Declare messageEndRef
 
   useEffect(() => {
     if (selectedUser) {
       getMessages(selectedUser._id);
+      subscribeToMessages();
+
+      return ()=>{
+        unsubscribeToMessages();
+      }
     }
   }, [selectedUser, getMessages]); // Fix: Use `selectedUser` directly
 
