@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import axios from "axios";
 import {io} from 'socket.io-client';
 
-const BASE_URL='http://localhost:5001';
+const BASE_URL=import.meta.env.MODE === "development" ? "http://localhost:5001/api" : "/api",
 
 
 export const userAuthStore=create((set,get)=>({
@@ -96,8 +96,8 @@ export const userAuthStore=create((set,get)=>({
         set({socket:socket});
 
         socket.on("OnlineUsers",(userIds)=>{
-            set({onlineUsers:[userIds]});
-        })
+            set({onlineUsers:userIds});
+        });
     },
     disconnectSocket:()=>{
         if(get().socket?.connected){

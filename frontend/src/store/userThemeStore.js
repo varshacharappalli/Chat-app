@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import axios from "axios";
 
 export const userThemeStore = create((set)=>({
-    theme:localStorage.getItem('chat-item')||'coffee',
+    theme:localStorage.getItem('chat-item')||'cupcake',
     setTheme: (theme) => {
         localStorage.setItem("chat-theme", theme);
         set({ theme });
