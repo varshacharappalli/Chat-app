@@ -45,14 +45,16 @@ export const userChatStore=create((set,get)=>({
     }
     ,setSelectedUser:(selectedUser)=>{set({selectedUser:selectedUser})},
     subscribeToMessages(){
-        const selectedUser=get();
-        if(selectedUser){return}
+        const selectedUser = get().selectedUser; 
+        if(!selectedUser){return}
         const socket=userAuthStore.getState().socket;
 
-        socket.on("newmessages",(newMessage)=>{
-            set({messages:[...get(),newMessage]})
-        })
 
+        socket.on("newmessages", (newMessage) => {
+            if(newMessage._id!==selectedUser._id){return}
+            set({ messages: [...get().messages, newMessage] });
+        });
+        
     },
     unsubscribeToMessages(){
         const socket=userAuthStore.getState().socket;
