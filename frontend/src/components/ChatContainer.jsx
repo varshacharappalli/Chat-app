@@ -1,47 +1,54 @@
-import React, { useEffect } from 'react'
-import { userChatStore } from '../store/userChatStore'
+import React, { useEffect, useRef } from 'react';
+import { userChatStore } from '../store/userChatStore';
 import ChatHeader from './ChatHeader';
 import Input from './Input';
 import MessageSkeleton from './skeletons/MessageSkeleton';
 import { userAuthStore } from '../store/userAuthStore';
 import { formatMessageTime } from '../lib/utils';
 
-
-
 const ChatContainer = () => {
-  const {messages,getMessages,isMessagesLoading,selectedUser}=userChatStore();
-  const {authUser}=userAuthStore();
+  const { messages, getMessages, isMessagesLoading, selectedUser } = userChatStore();
+  const { authUser } = userAuthStore();
+  const messageEndRef = useRef(null); // Fix: Declare messageEndRef
 
-  useEffect(()=>{
-    getMessages(selectedUser._id);
-  },[selectedUser._id,getMessages]);
+  useEffect(() => {
+    if (selectedUser) {
+      getMessages(selectedUser._id);
+    }
+  }, [selectedUser, getMessages]); // Fix: Use `selectedUser` directly
 
-  if (isMessagesLoading) return (
-    <div className="flex-1 flex flex-col overflow-auto">
-      <ChatHeader />
-      <MessageSkeleton />
-      <MessageInput />
-    </div>
-  );
-  
+  // Scroll to the latest message
+  useEffect(() => {
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  if (!selectedUser) return <div className="flex-1 flex justify-center items-center">Select a user to start chatting</div>;
+
+  if (isMessagesLoading)
+    return (
+      <div className="flex-1 flex flex-col overflow-auto">
+        <ChatHeader />
+        <MessageSkeleton />
+        <Input />
+      </div>
+    );
 
   return (
-    <div>
-      <ChatHeader/>
+    <div className="flex flex-col h-full w-full">
+      <ChatHeader />
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
           <div
             key={message._id}
             className={`chat ${message.senderId === authUser._id ? "chat-end" : "chat-start"}`}
-            ref={messageEndRef}
           >
-            <div className=" chat-image avatar">
+            <div className="chat-image avatar">
               <div className="size-10 rounded-full border">
                 <img
                   src={
                     message.senderId === authUser._id
                       ? authUser.profilePic || "/avatar.png"
-                      : selectedUser.profilePic || "/avatar.png"
+                      : selectedUser?.profilePic || "/avatar.png"
                   }
                   alt="profile pic"
                 />
@@ -64,10 +71,11 @@ const ChatContainer = () => {
             </div>
           </div>
         ))}
+        <div ref={messageEndRef} /> {/* Fix: Add reference for auto-scroll */}
       </div>
-      <Input/>
+      <Input />
     </div>
-  )
-}
+  );
+};
 
-export default ChatContainer
+export default ChatContainer;
