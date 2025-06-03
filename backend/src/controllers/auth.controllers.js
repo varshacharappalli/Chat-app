@@ -48,36 +48,42 @@ export const signup = async (req, res) => {
     }
 };
 
-export const login=async (req,res)=>{
-    const {email,password}=req.body;
+export const login = async (req, res) => {
+    const { email, password } = req.body;
+    
     try {
-        const user=await User.findOne({email});
-        if(user){
-            const isPasswordcorrect=await bcrypt.compare(password,user.password);
-            if(!isPasswordcorrect){
-                return res.status('404').json({message:'Invalid credentials'});
-            }
-            generateToken(user._id,res);
-            res.status(201).json({
-                _id: user._id,
-                fullname: user.fullname,  
-                email: user.email,
-                profilePic: user.profilePic
-            });
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Please provide email and password' });
         }
-        else{
-            return res.status('401').json({message:'Invalid credentials.'});
-        }
-    } catch (error) {
-        console.log("Error in login credentials:"+error.message);
-        res.status(500).json({message:'Error in login credentials'});
-    }
-}
 
-export const logout=async (req,res)=>{
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+        if (!isPasswordCorrect) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        generateToken(user._id, res);
+        
+        res.status(200).json({
+            _id: user._id,
+            fullname: user.fullname,
+            email: user.email,
+            profilePic: user.profilePic
+        });
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const logout = async (req, res) => {
     try {
-        res.cookie("jwt","",{maxAge:0});
-        res.status(201).json({message:"Logged out successfully"});
+        res.cookie("jwt", "", { maxAge: 0 });
+        res.status(200).json({ message: "Logged out successfully" });
     } catch (error) {
         console.log(error.message);
         res.status(401).json({message:'Couldnt logout.'});
@@ -96,7 +102,7 @@ export const updateProfile=async(req,res)=>{
             userId,
             { profilePic: uploadResponse.secure_url },
             { new: true }
-          );
+        );
       
           res.status(200).json(updatedUser);
 
